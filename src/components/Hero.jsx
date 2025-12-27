@@ -30,8 +30,10 @@ const Hero = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.8 }}
+                    style={{ whiteSpace: 'pre-line' }}
                 >
-                    Everyday life is the most beautiful story.
+                    평범한 하루가 가장 아름다운 이야기입니다.<br />
+                    우리의 소중한 추억을 영원히 간직하세요.
                 </motion.p>
             </div>
 
