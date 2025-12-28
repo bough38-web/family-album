@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'framer-motion'; // eslint-disable-line no-unused-vars
 import { ChevronDown } from 'lucide-react';
 import './Hero.css';
 
@@ -10,7 +10,7 @@ const Hero = () => {
                 {/* Placeholder image from Unsplash - warm family/nature vibe */}
                 <motion.img
                     src="https://images.unsplash.com/photo-1511895426328-dc8714191300?q=80&w=2070&auto=format&fit=crop"
-                    alt="Family Moments"
+                    alt="Happy family walking together in nature"
                     initial={{ scale: 1.1 }}
                     animate={{ scale: 1 }}
                     transition={{ duration: 10, ease: "easeOut" }}
@@ -48,7 +48,7 @@ const Hero = () => {
                     animate={{ y: [0, 8, 0] }}
                     transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
                 >
-                    <ChevronDown size={24} />
+                    <ChevronDown size={24} aria-hidden="true" />
                 </motion.div>
             </motion.div>
         </section>

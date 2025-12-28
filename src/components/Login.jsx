@@ -1,24 +1,25 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Lock, ArrowRight } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Lock, ArrowRight, User } from 'lucide-react';
+import { motion } from 'framer-motion'; // eslint-disable-line no-unused-vars
 import './Login.css';
 
 const Login = () => {
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const { login } = useAuth();
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if (login(password)) {
+        const success = await login(username, password);
+        if (success) {
             navigate('/');
         } else {
-            setError('Incorrect password. Hint: 1234');
+            setError('Invalid credentials.');
             setPassword('');
-            // Shake animation trigger could go here
         }
     };
 
@@ -35,16 +36,24 @@ const Login = () => {
                     <Lock size={32} />
                 </div>
                 <h2>Family Access</h2>
-                <p>Please enter the family passcode to view the album.</p>
+                <p>Welcome back! Please login.</p>
 
                 <form onSubmit={handleSubmit} className="login-form">
                     <input
+                        type="text"
+                        placeholder="Username (Optional for legacy)"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        className="login-input"
+                        aria-label="Username"
+                    />
+                    <input
                         type="password"
-                        placeholder="Passcode"
+                        placeholder="Password or Passcode"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className="login-input"
-                        autoFocus
+                        aria-label="Password or Passcode"
                     />
                     {error && <p className="error-msg">{error}</p>}
 
@@ -52,6 +61,16 @@ const Login = () => {
                         <span>Enter</span>
                         <ArrowRight size={18} />
                     </button>
+
+                    <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+                        <Link to="/signup" style={{ color: 'var(--primary)', textDecoration: 'none', fontSize: '0.9rem' }}>
+                            New member? Sign Up
+                        </Link>
+                        <span style={{ margin: '0 0.5rem', color: 'var(--text-secondary)' }}>|</span>
+                        <Link to="/forgot-password" style={{ color: 'var(--text-secondary)', textDecoration: 'none', fontSize: '0.9rem' }}>
+                            Forgot Password?
+                        </Link>
+                    </div>
                 </form>
             </motion.div>
         </div>

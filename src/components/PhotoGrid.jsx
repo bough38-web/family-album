@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion'; // eslint-disable-line no-unused-vars
 import { Maximize2, X, Heart } from 'lucide-react';
 import { usePhotos } from '../context/PhotoContext';
+import { useSettings } from '../context/SettingsContext';
 import './PhotoGrid.css';
 
 const PhotoGrid = () => {
     const [selectedId, setSelectedId] = useState(null);
     const { photos, toggleLike, addComment } = usePhotos();
+    const { settings } = useSettings();
     const [commentText, setCommentText] = useState("");
 
     const selectedPhoto = photos.find(p => p.id === selectedId);
@@ -26,7 +28,7 @@ const PhotoGrid = () => {
                 <p>소중한 일상의 기록들</p>
             </div>
 
-            <div className="photo-grid">
+            <div className={`photo-grid density-${settings.gridDensity}`}>
                 {photos.map((photo) => (
                     <motion.div
                         key={photo.id}
@@ -40,7 +42,8 @@ const PhotoGrid = () => {
                         <div className="photo-overlay">
                             <span>{photo.title}</span>
                             <div className="overlay-stats">
-                                <Heart size={16} fill="white" className="heart-icon-sm" />
+                                <Heart size={16} fill="white" className="heart-icon-sm" aria-hidden="true" />
+                                <span className="sr-only">Likes:</span>
                                 <span>{photo.likes || 0}</span>
                             </div>
                         </div>
@@ -69,17 +72,18 @@ const PhotoGrid = () => {
                             <div className="lightbox-sidebar">
                                 <div className="sidebar-header">
                                     <h3>{selectedPhoto.title}</h3>
-                                    <button className="close-btn-static" onClick={() => setSelectedId(null)}>
-                                        <X size={24} />
+                                    <button className="close-btn-static" onClick={() => setSelectedId(null)} aria-label="Close lightbox">
+                                        <X size={24} aria-hidden="true" />
                                     </button>
                                 </div>
 
                                 <div className="stats-row">
-                                    <button className="like-btn-large" onClick={() => toggleLike(selectedId)}>
+                                    <button className="like-btn-large" onClick={() => toggleLike(selectedId)} aria-label="Like this photo">
                                         <Heart
                                             size={24}
                                             fill={selectedPhoto.likes > 0 ? "#ff4757" : "none"}
                                             color={selectedPhoto.likes > 0 ? "#ff4757" : "currentColor"}
+                                            aria-hidden="true"
                                         />
                                         <span>{selectedPhoto.likes || 0} Likes</span>
                                     </button>
@@ -106,8 +110,9 @@ const PhotoGrid = () => {
                                         value={commentText}
                                         onChange={(e) => setCommentText(e.target.value)}
                                         placeholder="댓글 남기기..."
+                                        aria-label="Add a comment"
                                     />
-                                    <button type="submit" disabled={!commentText.trim()}>
+                                    <button type="submit" disabled={!commentText.trim()} aria-label="Post comment">
                                         등록
                                     </button>
                                 </form>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'framer-motion'; // eslint-disable-line no-unused-vars
 import { Calendar, Clock } from 'lucide-react';
 import './Timeline.css';
 
@@ -30,7 +30,7 @@ const Timeline = () => {
                     >
                         <div className="timeline-content">
                             <div className="timeline-date">
-                                <Calendar size={14} />
+                                <Calendar size={14} aria-hidden="true" />
                                 <span>{event.date}</span>
                             </div>
                             <h3>{event.title}</h3>

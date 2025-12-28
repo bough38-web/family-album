@@ -6,9 +6,12 @@ import PhotoGrid from './components/PhotoGrid';
 import Timeline from './components/Timeline';
 import About from './components/About';
 import Login from './components/Login';
+import ForgotPassword from './components/ForgotPassword';
+import SignUp from './components/SignUp';
 import AdminPanel from './components/AdminPanel';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { PhotoProvider } from './context/PhotoContext';
+import { SettingsProvider } from './context/SettingsContext';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
@@ -36,44 +39,49 @@ const Gallery = () => <div style={{ paddingTop: '100px', textAlign: 'center' }}>
 function App() {
   return (
     <AuthProvider>
-      <PhotoProvider>
-        <Router>
-          <Routes>
-            <Route path="/login" element={<Login />} />
+      <SettingsProvider>
+        <PhotoProvider>
+          <Router>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/signup" element={<SignUp />} />
 
-            <Route path="/" element={
-              <ProtectedRoute>
-                <Layout><Home /></Layout>
-              </ProtectedRoute>
-            } />
+              <Route path="/" element={
+                <ProtectedRoute>
+                  <Layout><Home /></Layout>
+                </ProtectedRoute>
+              } />
 
-            <Route path="/gallery" element={
-              <ProtectedRoute>
-                <Layout><PhotoGrid /></Layout>
-              </ProtectedRoute>
-            } />
+              <Route path="/gallery" element={
+                <ProtectedRoute>
+                  <Layout><PhotoGrid /></Layout>
+                </ProtectedRoute>
+              } />
 
-            <Route path="/timeline" element={
-              <ProtectedRoute>
-                <Layout><Timeline /></Layout>
-              </ProtectedRoute>
-            } />
+              <Route path="/timeline" element={
+                <ProtectedRoute>
+                  <Layout><Timeline /></Layout>
+                </ProtectedRoute>
+              } />
 
-            <Route path="/about" element={
-              <ProtectedRoute>
-                <Layout><About /></Layout>
-              </ProtectedRoute>
-            } />
+              <Route path="/about" element={
+                <ProtectedRoute>
+                  <Layout><About /></Layout>
+                </ProtectedRoute>
+              } />
 
-            <Route path="/admin" element={
-              <ProtectedRoute>
-                <Layout><AdminPanel /></Layout>
-              </ProtectedRoute>
-            } />
-          </Routes>
-        </Router>
-      </PhotoProvider>
-    </AuthProvider>
+              <Route path="/admin" element={
+                <ProtectedRoute>
+                  <Layout><AdminPanel /></Layout>
+                </ProtectedRoute>
+              } />
+            </Routes>
+          </Router>
+
+        </PhotoProvider>
+      </SettingsProvider>
+    </AuthProvider >
   );
 }
 

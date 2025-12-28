@@ -1,0 +1,73 @@
+.admin-reset-form {
+    background-color: var(--color-bg);
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--border-color, #eee);
+}
+
+.admin-reset-form h4 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: var(--color-text);
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.admin-reset-form .reset-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    align-items: center;
+}
+
+.admin-reset-form .reset-input {
+    flex: 1;
+    min-width: 150px;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.admin-reset-form .reset-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.admin-reset-form .reset-btn {
+    padding: 0.8rem 1.5rem;
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.admin-reset-form .reset-btn:hover {
+    background-color: var(--color-primary-dark);
+    transform: translateY(-1px);
+}
+
+.admin-reset-form .msg-success {
+    color: var(--color-success, #2ecc71);
+    margin-top: 0.8rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.admin-reset-form .msg-error {
+    color: var(--color-error, #e74c3c);
+    margin-top: 0.8rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+}

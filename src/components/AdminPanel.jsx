@@ -1,13 +1,21 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Upload, Trash2, Save, Image as ImageIcon } from 'lucide-react';
+
+import { motion, AnimatePresence } from 'framer-motion';
+import { Upload, Trash2, Save, X, CheckSquare, Square } from 'lucide-react';
 import { usePhotos } from '../context/PhotoContext';
+
+import AdminResetForm from './AdminResetForm';
+import { useSettings } from '../context/SettingsContext';
 import './AdminPanel.css';
 
 const AdminPanel = () => {
     const [uploads, setUploads] = useState([]);
     const [isDragging, setIsDragging] = useState(false);
     const { photos, addPhoto, removePhoto } = usePhotos();
+    const { settings } = useSettings();
+
+    // Expert Mode: Multi-select state
+    const [selectedPhotos, setSelectedPhotos] = useState([]);
 
     const handleDragOver = (e) => {
         e.preventDefault();
@@ -32,30 +40,68 @@ const AdminPanel = () => {
 
     const handleFiles = (files) => {
         const newUploads = files.map(file => ({
+            id: Math.random().toString(36).substr(2, 9),
             file,
-            url: URL.createObjectURL(file), // Preview URL
-            name: file.name
+            url: URL.createObjectURL(file),
+            // Default metadata
+            name: file.name.split('.')[0],
+            date: new Date().toISOString().split('T')[0],
+            caption: '',
+            size: 'medium'
         }));
         setUploads([...uploads, ...newUploads]);
     };
 
+    const updateUploadData = (id, field, value) => {
+        setUploads(uploads.map(u => u.id === id ? { ...u, [field]: value } : u));
+    };
+
+    const removeUpload = (id) => {
+        setUploads(uploads.filter(u => u.id !== id));
+    };
+
     const handleSave = () => {
-        // Process each upload
+        if (uploads.length === 0) return;
+
+        let processedCount = 0;
         uploads.forEach(upload => {
-            // Create Base64 string for storage
             const reader = new FileReader();
             reader.onloadend = () => {
                 addPhoto({
-                    title: upload.name.split('.')[0] || 'New Memory',
+                    title: upload.name,
                     url: reader.result,
-                    size: 'medium' // Default size
+                    size: upload.size,
+                    date: upload.date,
+                    comments: upload.caption ? [{
+                        id: Date.now(),
+                        text: upload.caption,
+                        date: new Date().toISOString()
+                    }] : []
                 });
+
+                processedCount++;
+                if (processedCount === uploads.length) {
+                    setUploads([]);
+                    alert("All photos saved successfully!");
+                }
             };
             reader.readAsDataURL(upload.file);
         });
+    };
 
-        setUploads([]); // Clear uploads
-        alert("Photos saved locally!");
+    // Expert Mode: Bulk Actions
+    const togglePhotoSelection = (id) => {
+        if (selectedPhotos.includes(id)) {
+            setSelectedPhotos(selectedPhotos.filter(pid => pid !== id));
+        } else {
+            setSelectedPhotos([...selectedPhotos, id]);
+        }
+    };
+
+    const handleBulkDelete = () => {
+        if (!window.confirm(`Delete ${selectedPhotos.length} photos?`)) return;
+        selectedPhotos.forEach(id => removePhoto(id));
+        setSelectedPhotos([]);
     };
 
     return (
@@ -63,9 +109,13 @@ const AdminPanel = () => {
             <div className="admin-header">
                 <h1>Photo Management</h1>
                 <p>Upload new memories to the family album.</p>
+                {settings.expertMode && (
+                    <div className="expert-badge">Expert Mode Active</div>
+                )}
             </div>
 
             <div className="admin-content">
+                {/* Upload Zone */}
                 <div
                     className={`upload-zone ${isDragging ? 'dragging' : ''}`}
                     onDragOver={handleDragOver}
@@ -79,75 +129,143 @@ const AdminPanel = () => {
                         id="file-input"
                         style={{ display: 'none' }}
                         onChange={handleFileSelect}
+                        aria-label="File Upload Input"
                     />
-                    <label htmlFor="file-input" className="upload-label">
+                    <label htmlFor="file-input" className="upload-label" role="button" tabIndex="0">
                         <Upload size={48} className="upload-icon" />
                         <h3>Drag & Drop photos here</h3>
                         <p>or click to browse</p>
                     </label>
                 </div>
 
-                {uploads.length > 0 && (
-                    <div className="uploads-preview">
-                        <h3>Ready to Upload ({uploads.length})</h3>
-                        <div className="preview-grid">
-                            {uploads.map((upload, index) => (
-                                <motion.div
-                                    key={index}
-                                    className="preview-item"
-                                    initial={{ opacity: 0, scale: 0.8 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                >
-                                    <img src={upload.url} alt="preview" />
-                                    <button onClick={() => setUploads(uploads.filter((_, i) => i !== index))}>
-                                        <Trash2 size={16} />
-                                    </button>
-                                </motion.div>
-                            ))}
-                        </div>
-                        <button className="save-btn" onClick={handleSave}>
-                            <Save size={20} />
-                            Save Changes
-                        </button>
-                    </div>
-                )}
+                {/* Draft Editor */}
+                <AnimatePresence>
+                    {uploads.length > 0 && (
+                        <motion.div
+                            className="draft-editor-section"
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                        >
+                            <div className="section-title-row">
+                                <h3>Draft Editor ({uploads.length})</h3>
+                                <button className="save-btn" onClick={handleSave}>
+                                    <Save size={18} />
+                                    Publish All
+                                </button>
+                            </div>
 
+                            <div className="draft-list" role="list">
+                                {uploads.map((upload) => (
+                                    <div key={upload.id} className="draft-item">
+                                        <div className="draft-preview">
+                                            <img src={upload.url} alt="preview" loading="lazy" />
+                                            <button className="remove-draft-btn" onClick={() => removeUpload(upload.id)} aria-label="Remove draft">
+                                                <X size={16} aria-hidden="true" />
+                                            </button>
+                                        </div>
+                                        <div className="draft-details">
+                                            <div className="form-group">
+                                                <label>Title</label>
+                                                <input
+                                                    type="text"
+                                                    value={upload.name}
+                                                    onChange={(e) => updateUploadData(upload.id, 'name', e.target.value)}
+                                                />
+                                            </div>
+                                            <div className="form-group row">
+                                                <div style={{ flex: 1 }}>
+                                                    <label>Date</label>
+                                                    <input
+                                                        type="date"
+                                                        value={upload.date}
+                                                        onChange={(e) => updateUploadData(upload.id, 'date', e.target.value)}
+                                                    />
+                                                </div>
+                                                <div style={{ flex: 1 }}>
+                                                    <label>Size</label>
+                                                    <select
+                                                        value={upload.size}
+                                                        onChange={(e) => updateUploadData(upload.id, 'size', e.target.value)}
+                                                    >
+                                                        <option value="medium">Medium</option>
+                                                        <option value="wide">Wide</option>
+                                                        <option value="tall">Tall</option>
+                                                        <option value="large">Large</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div className="form-group">
+                                                <label>Caption / First Comment</label>
+                                                <textarea
+                                                    rows="2"
+                                                    value={upload.caption}
+                                                    onChange={(e) => updateUploadData(upload.id, 'caption', e.target.value)}
+                                                    placeholder="Add a sweet memory..."
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                {/* Existing Gallery */}
+                {/* Admin Password Reset Section */}
+                <div className="admin-reset-section" style={{ marginTop: '2rem' }}>
+                    <h3>Reset User Password (Admin)</h3>
+                    <AdminResetForm />
+                </div>
                 <div className="existing-photos">
-                    <h3>Current Gallery Photos ({photos.length})</h3>
+                    <div className="section-title-row">
+                        <h3>Gallery ({photos.length})</h3>
+                        {settings.expertMode && selectedPhotos.length > 0 && (
+                            <button className="delete-selected-btn" onClick={handleBulkDelete}>
+                                <Trash2 size={16} />
+                                Delete ({selectedPhotos.length})
+                            </button>
+                        )}
+                    </div>
+
                     <div className="preview-grid">
                         {photos.map((photo) => (
-                            <div key={photo.id} className="existing-item">
-                                <img src={photo.url} alt={photo.title} />
+                            <div
+                                key={photo.id}
+                                className={`existing-item ${selectedPhotos.includes(photo.id) ? 'selected' : ''}`}
+                                onClick={() => settings.expertMode && togglePhotoSelection(photo.id)}
+                            >
+                                <img src={photo.url} alt={photo.title} loading="lazy" />
                                 <div className="item-info">
                                     <span>{photo.title}</span>
                                 </div>
-                                <button
-                                    onClick={() => removePhoto(photo.id)}
-                                    style={{
-                                        position: 'absolute',
-                                        top: 5,
-                                        right: 5,
-                                        background: 'rgba(0,0,0,0.6)',
-                                        border: 'none',
-                                        color: 'white',
-                                        borderRadius: '50%',
-                                        width: 24,
-                                        height: 24,
-                                        cursor: 'pointer',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'center',
-                                        padding: 0
-                                    }}
-                                >
-                                    <Trash2 size={14} />
-                                </button>
+
+                                {settings.expertMode ? (
+                                    <div className="selection-overlay">
+                                        {selectedPhotos.includes(photo.id) ?
+                                            <CheckSquare className="check-icon" size={24} /> :
+                                            <Square className="check-icon" size={24} />
+                                        }
+                                    </div>
+                                ) : (
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            if (window.confirm('Delete this photo?')) removePhoto(photo.id);
+                                        }}
+                                        className="delete-btn-single"
+                                        aria-label={`Delete photo ${photo.title}`}
+                                    >
+                                        <Trash2 size={14} aria-hidden="true" />
+                                    </button>
+                                )}
                             </div>
                         ))}
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 
