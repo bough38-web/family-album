@@ -84,6 +84,29 @@ export const AuthProvider = ({ children }) => {
         return result;
     };
 
+    const adminCreateUser = async (username, password, masterKey) => {
+        // Confirm Admin Role
+        const current = JSON.parse(localStorage.getItem('currentUser'));
+        if (!current || current.role !== 'admin') {
+            return { success: false, message: 'Admin privileges required' };
+        }
+        // Verify Master Key
+        if (masterKey !== MASTER_KEY) {
+            return { success: false, message: 'Invalid Master Key' };
+        }
+        // Check if user exists
+        if (users.some(user => user.username === username)) {
+            return { success: false, message: 'Username already exists' };
+        }
+
+        const hashed = await hashPassword(password);
+        const newUser = { username, password: hashed, role: 'user' };
+        const updatedUsers = [...users, newUser];
+        setUsers(updatedUsers);
+        localStorage.setItem('familyUsers', JSON.stringify(updatedUsers));
+        return { success: true, message: 'User created successfully' };
+    };
+
     const resetPassword = async (username, newPassword, masterKey) => {
         // Verify Master Key
         if (masterKey !== MASTER_KEY) {
@@ -102,7 +125,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, login, logout, register, resetPassword, adminResetPassword, loading }}>
+        <AuthContext.Provider value={{ isAuthenticated, login, logout, register, resetPassword, adminResetPassword, adminCreateUser, loading, registeredUsers: users.map(u => ({ username: u.username, role: u.role })) }}>
             {!loading && children}
         </AuthContext.Provider>
     );

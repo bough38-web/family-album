@@ -5,6 +5,7 @@ import { Upload, Trash2, Save, X, CheckSquare, Square, Edit2 } from 'lucide-reac
 import { usePhotos } from '../context/PhotoContext';
 
 import AdminResetForm from './AdminResetForm';
+import AdminCreateUserForm from './AdminCreateUserForm';
 import EditPhotoModal from './EditPhotoModal';
 import { useSettings } from '../context/SettingsContext';
 import './AdminPanel.css';
@@ -14,10 +15,12 @@ const AdminPanel = () => {
     const [isDragging, setIsDragging] = useState(false);
     const { photos, addPhoto, removePhoto, updatePhoto } = usePhotos();
     const { settings } = useSettings();
+    const { registeredUsers } = useAuth(); // Get registered users
 
     // Edit Mode State
     const [editingPhoto, setEditingPhoto] = useState(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [selectedUserForReset, setSelectedUserForReset] = useState(null);
 
     // Expert Mode: Multi-select state
     const [selectedPhotos, setSelectedPhotos] = useState([]);
@@ -229,10 +232,35 @@ const AdminPanel = () => {
                 </AnimatePresence>
 
                 {/* Existing Gallery */}
-                {/* Admin Password Reset Section */}
+                {/* Admin Password Reset & User Creation Section */}
                 <div className="admin-reset-section" style={{ marginTop: '2rem' }}>
-                    <h3>Reset User Password (Admin)</h3>
-                    <AdminResetForm />
+                    <h3>User Management (Admin)</h3>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+
+                        {/* User List */}
+                        <div className="user-management-card" style={{ background: 'white', padding: '1.5rem', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
+                            <h4>Registered Users</h4>
+                            <div className="user-list" role="list" style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                {registeredUsers?.map(u => (
+                                    <div key={u.username} className="user-list-item" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem', background: '#f8f9fa', borderRadius: '6px' }}>
+                                        <div>
+                                            <span style={{ fontWeight: '500' }}>{u.username}</span>
+                                            <span style={{ marginLeft: '0.5rem', fontSize: '0.8em', color: '#666', background: '#e9ecef', padding: '2px 6px', borderRadius: '4px' }}>{u.role}</span>
+                                        </div>
+                                        <button
+                                            onClick={() => setSelectedUserForReset(u.username)}
+                                            style={{ background: 'transparent', border: '1px solid #dee2e6', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85em' }}
+                                        >
+                                            Reset
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <AdminResetForm selectedUser={selectedUserForReset} />
+                        <AdminCreateUserForm />
+                    </div>
                 </div>
                 <div className="existing-photos">
                     <div className="section-title-row">
