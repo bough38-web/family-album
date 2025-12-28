@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, Trash2, Save, X, CheckSquare, Square, Edit2 } from 'lucide-react';
+import { Upload, Trash2, Save, X, CheckSquare, Square, Edit2, Shield, User } from 'lucide-react';
 import { usePhotos } from '../context/PhotoContext';
 import { useAuth } from '../context/AuthContext';
 
@@ -234,23 +234,28 @@ const AdminPanel = () => {
 
                 {/* Existing Gallery */}
                 {/* Admin Password Reset & User Creation Section */}
-                <div className="admin-reset-section" style={{ marginTop: '2rem' }}>
-                    <h3>User Management (Admin)</h3>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+                {/* Admin Password Reset & User Creation Section */}
+                <div className="user-management-section">
+                    <h3>
+                        <Shield size={24} />
+                        User Management (Admin)
+                    </h3>
+                    <div className="user-management-grid">
 
                         {/* User List */}
-                        <div className="user-management-card" style={{ background: 'white', padding: '1.5rem', borderRadius: '12px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
+                        <div className="user-management-card">
                             <h4>Registered Users</h4>
-                            <div className="user-list" role="list" style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                            <div className="user-list" role="list">
                                 {registeredUsers?.map(u => (
-                                    <div key={u.username} className="user-list-item" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem', background: '#f8f9fa', borderRadius: '6px' }}>
-                                        <div>
-                                            <span style={{ fontWeight: '500' }}>{u.username}</span>
-                                            <span style={{ marginLeft: '0.5rem', fontSize: '0.8em', color: '#666', background: '#e9ecef', padding: '2px 6px', borderRadius: '4px' }}>{u.role}</span>
+                                    <div key={u.username} className="user-list-item">
+                                        <div className="user-info">
+                                            {u.role === 'admin' ? <Shield size={16} className="text-blue-500" /> : <User size={16} className="text-purple-500" />}
+                                            <span>{u.username}</span>
+                                            <span className={`role-badge ${u.role}`}>{u.role}</span>
                                         </div>
                                         <button
                                             onClick={() => setSelectedUserForReset(u.username)}
-                                            style={{ background: 'transparent', border: '1px solid #dee2e6', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer', fontSize: '0.85em' }}
+                                            className="action-btn-sm"
                                         >
                                             Reset
                                         </button>
