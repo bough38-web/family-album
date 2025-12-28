@@ -1,16 +1,12 @@
 import React from 'react';
-import { motion } from 'framer-motion'; // eslint-disable-line no-unused-vars
-import { Calendar, Clock } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Calendar } from 'lucide-react';
+import { useContent } from '../context/ContentContext';
 import './Timeline.css';
 
-const events = [
-    { id: 1, date: '2025-12-25', title: 'Christmas Dinner', desc: 'A wonderful evening with everyone gathered around the table.', img: 'https://images.unsplash.com/photo-1576824228987-a3d8df8d4360?q=80&w=800&auto=format&fit=crop' },
-    { id: 2, date: '2025-11-15', title: 'Autumn Hike', desc: 'The mountains were golden. Dad made it to the peak!', img: 'https://images.unsplash.com/photo-1445778235210-9b4344d5a92a?q=80&w=800&auto=format&fit=crop' },
-    { id: 3, date: '2025-09-02', title: 'Back to School', desc: 'First day for the little ones. They were so excited.', img: 'https://images.unsplash.com/photo-1427504746696-ea5abd7dfe33?q=80&w=800&auto=format&fit=crop' },
-    { id: 4, date: '2025-07-20', title: 'Summer Vacation', desc: 'Jeju Island trip. The sunset was unforgettable.', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=800&auto=format&fit=crop' },
-];
-
 const Timeline = () => {
+    const { timelineEvents } = useContent();
+
     return (
         <div className="timeline-page">
             <div className="timeline-header">
@@ -19,7 +15,7 @@ const Timeline = () => {
             </div>
 
             <div className="timeline-container">
-                {events.map((event, index) => (
+                {timelineEvents.map((event, index) => (
                     <motion.div
                         key={event.id}
                         className={`timeline-item ${index % 2 === 0 ? 'left' : 'right'}`}

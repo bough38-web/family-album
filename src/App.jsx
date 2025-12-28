@@ -13,6 +13,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { PhotoProvider } from './context/PhotoContext';
 import { SettingsProvider } from './context/SettingsContext';
 import { ToastProvider } from './context/ToastContext';
+import { ContentProvider } from './context/ContentContext';
 
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
@@ -42,45 +43,47 @@ function App() {
     <AuthProvider>
       <SettingsProvider>
         <ToastProvider>
-          <PhotoProvider>
-            <Router>
-              <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/signup" element={<SignUp />} />
+          <ContentProvider>
+            <PhotoProvider>
+              <Router>
+                <Routes>
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/signup" element={<SignUp />} />
 
-                <Route path="/" element={
-                  <ProtectedRoute>
-                    <Layout><Home /></Layout>
-                  </ProtectedRoute>
-                } />
+                  <Route path="/" element={
+                    <ProtectedRoute>
+                      <Layout><Home /></Layout>
+                    </ProtectedRoute>
+                  } />
 
-                <Route path="/gallery" element={
-                  <ProtectedRoute>
-                    <Layout><PhotoGrid /></Layout>
-                  </ProtectedRoute>
-                } />
+                  <Route path="/gallery" element={
+                    <ProtectedRoute>
+                      <Layout><PhotoGrid /></Layout>
+                    </ProtectedRoute>
+                  } />
 
-                <Route path="/timeline" element={
-                  <ProtectedRoute>
-                    <Layout><Timeline /></Layout>
-                  </ProtectedRoute>
-                } />
+                  <Route path="/timeline" element={
+                    <ProtectedRoute>
+                      <Layout><Timeline /></Layout>
+                    </ProtectedRoute>
+                  } />
 
-                <Route path="/about" element={
-                  <ProtectedRoute>
-                    <Layout><About /></Layout>
-                  </ProtectedRoute>
-                } />
+                  <Route path="/about" element={
+                    <ProtectedRoute>
+                      <Layout><About /></Layout>
+                    </ProtectedRoute>
+                  } />
 
-                <Route path="/admin" element={
-                  <ProtectedRoute>
-                    <Layout><AdminPanel /></Layout>
-                  </ProtectedRoute>
-                } />
-              </Routes>
-            </Router>
-          </PhotoProvider>
+                  <Route path="/admin" element={
+                    <ProtectedRoute>
+                      <Layout><AdminPanel /></Layout>
+                    </ProtectedRoute>
+                  } />
+                </Routes>
+              </Router>
+            </PhotoProvider>
+          </ContentProvider>
         </ToastProvider>
       </SettingsProvider>
     </AuthProvider >

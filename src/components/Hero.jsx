@@ -1,16 +1,18 @@
 import React from 'react';
-import { motion } from 'framer-motion'; // eslint-disable-line no-unused-vars
+import { motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
+import { useContent } from '../context/ContentContext';
 import './Hero.css';
 
 const Hero = () => {
+    const { heroContent } = useContent();
+
     return (
         <section className="hero-section">
             <div className="hero-bg">
-                {/* Placeholder image from Unsplash - warm family/nature vibe */}
                 <motion.img
-                    src="https://images.unsplash.com/photo-1511895426328-dc8714191300?q=80&w=2070&auto=format&fit=crop"
-                    alt="Happy family walking together in nature"
+                    src={heroContent.image}
+                    alt="Hero Background"
                     initial={{ scale: 1.1 }}
                     animate={{ scale: 1 }}
                     transition={{ duration: 10, ease: "easeOut" }}
@@ -24,7 +26,7 @@ const Hero = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.5 }}
                 >
-                    Cherished Moments
+                    {heroContent.title}
                 </motion.h1>
                 <motion.p
                     initial={{ opacity: 0, y: 20 }}
@@ -32,8 +34,7 @@ const Hero = () => {
                     transition={{ duration: 0.8, delay: 0.8 }}
                     style={{ whiteSpace: 'pre-line' }}
                 >
-                    평범한 하루가 가장 아름다운 이야기입니다.<br />
-                    우리의 소중한 추억을 영원히 간직하세요.
+                    {heroContent.subtitle}
                 </motion.p>
             </div>
 
