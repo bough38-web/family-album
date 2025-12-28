@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, Trash2, Save, X, CheckSquare, Square, Edit2, Shield, User } from 'lucide-react';
 import { usePhotos } from '../context/PhotoContext';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 import AdminResetForm from './AdminResetForm';
 import AdminCreateUserForm from './AdminCreateUserForm';
@@ -17,6 +18,7 @@ const AdminPanel = () => {
     const { photos, addPhoto, removePhoto, updatePhoto } = usePhotos();
     const { settings } = useSettings();
     const { registeredUsers } = useAuth(); // Get registered users
+    const { addToast } = useToast();
 
     // Edit Mode State
     const [editingPhoto, setEditingPhoto] = useState(null);
@@ -25,6 +27,13 @@ const AdminPanel = () => {
 
     // Expert Mode: Multi-select state
     const [selectedPhotos, setSelectedPhotos] = useState([]);
+
+    // Search State
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const filteredPhotos = photos.filter(photo =>
+        photo.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     const handleDragOver = (e) => {
         e.preventDefault();
@@ -91,7 +100,7 @@ const AdminPanel = () => {
                 processedCount++;
                 if (processedCount === uploads.length) {
                     setUploads([]);
-                    alert("All photos saved successfully!");
+                    addToast("All photos saved successfully!", "success");
                 }
             };
             reader.readAsDataURL(upload.file);
@@ -271,16 +280,33 @@ const AdminPanel = () => {
                 <div className="existing-photos">
                     <div className="section-title-row">
                         <h3>Gallery ({photos.length})</h3>
-                        {settings.expertMode && selectedPhotos.length > 0 && (
-                            <button className="delete-selected-btn" onClick={handleBulkDelete}>
-                                <Trash2 size={16} />
-                                Delete ({selectedPhotos.length})
-                            </button>
-                        )}
+                        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                            <div className="search-bar" style={{ position: 'relative' }}>
+                                <input
+                                    type="text"
+                                    placeholder="Search photos..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    style={{
+                                        padding: '6px 12px',
+                                        borderRadius: '6px',
+                                        border: '1px solid #ddd',
+                                        fontSize: '0.9rem',
+                                        width: '200px'
+                                    }}
+                                />
+                            </div>
+                            {settings.expertMode && selectedPhotos.length > 0 && (
+                                <button className="delete-selected-btn" onClick={handleBulkDelete}>
+                                    <Trash2 size={16} />
+                                    Delete ({selectedPhotos.length})
+                                </button>
+                            )}
+                        </div>
                     </div>
 
                     <div className="preview-grid">
-                        {photos.map((photo) => (
+                        {filteredPhotos.map((photo) => (
                             <div
                                 key={photo.id}
                                 className={`existing-item ${selectedPhotos.includes(photo.id) ? 'selected' : ''}`}
