@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, Trash2, Save, X, CheckSquare, Square, Edit2 } from 'lucide-react';
 import { usePhotos } from '../context/PhotoContext';
+import { useAuth } from '../context/AuthContext';
 
 import AdminResetForm from './AdminResetForm';
 import AdminCreateUserForm from './AdminCreateUserForm';
