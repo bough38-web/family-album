@@ -1,18 +1,23 @@
 import React, { useState } from 'react';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, Trash2, Save, X, CheckSquare, Square } from 'lucide-react';
+import { Upload, Trash2, Save, X, CheckSquare, Square, Edit2 } from 'lucide-react';
 import { usePhotos } from '../context/PhotoContext';
 
 import AdminResetForm from './AdminResetForm';
+import EditPhotoModal from './EditPhotoModal';
 import { useSettings } from '../context/SettingsContext';
 import './AdminPanel.css';
 
 const AdminPanel = () => {
     const [uploads, setUploads] = useState([]);
     const [isDragging, setIsDragging] = useState(false);
-    const { photos, addPhoto, removePhoto } = usePhotos();
+    const { photos, addPhoto, removePhoto, updatePhoto } = usePhotos();
     const { settings } = useSettings();
+
+    // Edit Mode State
+    const [editingPhoto, setEditingPhoto] = useState(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     // Expert Mode: Multi-select state
     const [selectedPhotos, setSelectedPhotos] = useState([]);
@@ -102,6 +107,17 @@ const AdminPanel = () => {
         if (!window.confirm(`Delete ${selectedPhotos.length} photos?`)) return;
         selectedPhotos.forEach(id => removePhoto(id));
         setSelectedPhotos([]);
+    };
+
+    const openEditModal = (photo) => {
+        setEditingPhoto(photo);
+        setIsEditModalOpen(true);
+    };
+
+    const handleSaveEdit = (id, updatedData) => {
+        updatePhoto(id, updatedData);
+        setIsEditModalOpen(false);
+        setEditingPhoto(null);
     };
 
     return (
@@ -249,22 +265,46 @@ const AdminPanel = () => {
                                         }
                                     </div>
                                 ) : (
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            if (window.confirm('Delete this photo?')) removePhoto(photo.id);
-                                        }}
-                                        className="delete-btn-single"
-                                        aria-label={`Delete photo ${photo.title}`}
-                                    >
-                                        <Trash2 size={14} aria-hidden="true" />
-                                    </button>
+                                    <div className="action-buttons" style={{ display: 'flex', gap: '8px' }}>
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                openEditModal(photo);
+                                            }}
+                                            className="edit-btn-single"
+                                            style={{
+                                                background: 'rgba(255,255,255,0.9)', border: 'none', borderRadius: '50%',
+                                                width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                cursor: 'pointer', boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
+                                            }}
+                                            aria-label={`Edit photo ${photo.title}`}
+                                        >
+                                            <Edit2 size={14} color="#333" aria-hidden="true" />
+                                        </button>
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                if (window.confirm('Delete this photo?')) removePhoto(photo.id);
+                                            }}
+                                            className="delete-btn-single"
+                                            aria-label={`Delete photo ${photo.title}`}
+                                        >
+                                            <Trash2 size={14} aria-hidden="true" />
+                                        </button>
+                                    </div>
                                 )}
                             </div>
                         ))}
                     </div>
                 </div>
             </div>
+
+            <EditPhotoModal
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                photo={editingPhoto}
+                onSave={handleSaveEdit}
+            />
         </div >
     );
 };

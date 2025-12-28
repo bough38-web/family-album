@@ -14,7 +14,8 @@ const DEFAULT_PHOTOS = [
         comments: [
             { id: 101, text: "너무 귀엽다! 축하해~", date: "2024-03-15T10:00:00Z" },
             { id: 102, text: "돌잡이 뭐 잡았어?", date: "2024-03-15T10:05:00Z" }
-        ]
+        ],
+        date: "2024-03-15"
     },
     {
         id: 2,
@@ -136,6 +137,17 @@ export const PhotoProvider = ({ children }) => {
         saveToStorage(updatedPhotos);
     };
 
+    const updatePhoto = (id, updatedData) => {
+        const updatedPhotos = photos.map(photo => {
+            if (photo.id === id) {
+                return { ...photo, ...updatedData };
+            }
+            return photo;
+        });
+        setPhotos(updatedPhotos);
+        saveToStorage(updatedPhotos);
+    };
+
     const addComment = (id, text) => {
         const updatedPhotos = photos.map(photo => {
             if (photo.id === id) {
@@ -153,7 +165,7 @@ export const PhotoProvider = ({ children }) => {
     };
 
     return (
-        <PhotoContext.Provider value={{ photos, addPhoto, removePhoto, toggleLike, addComment, loading }}>
+        <PhotoContext.Provider value={{ photos, addPhoto, removePhoto, updatePhoto, toggleLike, addComment, loading }}>
             {!loading && children}
         </PhotoContext.Provider>
     );
