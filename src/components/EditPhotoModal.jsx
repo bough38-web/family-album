@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Save, Upload } from 'lucide-react';
+import './EditPhotoModal.css';
 
 const EditPhotoModal = ({ isOpen, onClose, photo, onSave }) => {
     const [formData, setFormData] = useState({
@@ -43,9 +44,6 @@ const EditPhotoModal = ({ isOpen, onClose, photo, onSave }) => {
         e.preventDefault();
         onSave(photo.id, {
             ...formData,
-            // If caption changed, we might need to update the first comment or add a new one?
-            // For simplicity, let's assume we are editing the "caption" which acts as the first comment or description.
-            // If the original photo has comments, we update the first one's text if it exists, or create one.
             comments: photo.comments && photo.comments.length > 0
                 ? photo.comments.map((c, i) => i === 0 ? { ...c, text: formData.caption } : c)
                 : formData.caption ? [{ id: Date.now(), text: formData.caption, date: new Date().toISOString() }] : []
@@ -58,48 +56,38 @@ const EditPhotoModal = ({ isOpen, onClose, photo, onSave }) => {
     return (
         <AnimatePresence>
             <motion.div
-                className="modal-overlay"
+                className="edit-modal-overlay"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={onClose}
-                style={{
-                    position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-                    background: 'rgba(0,0,0,0.5)', zIndex: 1100,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center'
-                }}
             >
                 <motion.div
-                    className="modal-content"
+                    className="edit-modal-content"
                     initial={{ scale: 0.9, opacity: 0, y: 20 }}
                     animate={{ scale: 1, opacity: 1, y: 0 }}
                     exit={{ scale: 0.9, opacity: 0, y: 20 }}
                     onClick={(e) => e.stopPropagation()}
-                    style={{
-                        background: 'var(--color-bg)', padding: '2rem', borderRadius: '1rem',
-                        width: '90%', maxWidth: '500px', boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
-                        maxHeight: '90vh', overflowY: 'auto'
-                    }}
                     role="dialog"
                     aria-modal="true"
                     aria-labelledby="edit-photo-title"
                 >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-                        <h2 id="edit-photo-title" style={{ margin: 0 }}>Edit Photo</h2>
-                        <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }} aria-label="Close">
+                    <div className="edit-modal-header">
+                        <h2 id="edit-photo-title">Edit Photo</h2>
+                        <button onClick={onClose} className="close-button" aria-label="Close">
                             <X size={24} aria-hidden="true" />
                         </button>
                     </div>
 
-                    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    <form onSubmit={handleSubmit} className="edit-modal-form">
                         {/* Image Preview & Change */}
-                        <div style={{ marginBottom: '1rem', textAlign: 'center' }}>
+                        <div className="image-preview-section">
                             <img
                                 src={formData.url}
                                 alt="Preview"
-                                style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '8px', objectFit: 'cover' }}
+                                className="preview-image"
                             />
-                            <div style={{ marginTop: '0.5rem' }}>
+                            <div className="file-input-wrapper">
                                 <input
                                     type="file"
                                     accept="image/*"
@@ -109,12 +97,7 @@ const EditPhotoModal = ({ isOpen, onClose, photo, onSave }) => {
                                 />
                                 <label
                                     htmlFor="edit-file-input"
-                                    style={{
-                                        display: 'inline-flex', alignItems: 'center', gap: '6px',
-                                        padding: '8px 16px', borderRadius: '6px',
-                                        border: '1px solid var(--color-border)', cursor: 'pointer',
-                                        fontSize: '0.9rem'
-                                    }}
+                                    className="file-input-label"
                                 >
                                     <Upload size={16} /> Change Photo
                                 </label>
@@ -122,35 +105,35 @@ const EditPhotoModal = ({ isOpen, onClose, photo, onSave }) => {
                         </div>
 
                         <div className="form-group">
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Title</label>
+                            <label>Title</label>
                             <input
                                 type="text"
                                 name="title"
                                 value={formData.title}
                                 onChange={handleChange}
                                 required
-                                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--color-border)' }}
+                                className="form-input"
                             />
                         </div>
 
-                        <div style={{ display: 'flex', gap: '1rem' }}>
+                        <div className="form-row">
                             <div className="form-group" style={{ flex: 1 }}>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Date</label>
+                                <label>Date</label>
                                 <input
                                     type="date"
                                     name="date"
                                     value={formData.date}
                                     onChange={handleChange}
-                                    style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--color-border)' }}
+                                    className="form-input"
                                 />
                             </div>
                             <div className="form-group" style={{ flex: 1 }}>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Size</label>
+                                <label>Size</label>
                                 <select
                                     name="size"
                                     value={formData.size}
                                     onChange={handleChange}
-                                    style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--color-border)' }}
+                                    className="form-select"
                                 >
                                     <option value="medium">Medium</option>
                                     <option value="wide">Wide</option>
@@ -161,34 +144,27 @@ const EditPhotoModal = ({ isOpen, onClose, photo, onSave }) => {
                         </div>
 
                         <div className="form-group">
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500 }}>Caption</label>
+                            <label>Caption</label>
                             <textarea
                                 name="caption"
                                 value={formData.caption}
                                 onChange={handleChange}
                                 rows="3"
-                                style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid var(--color-border)' }}
+                                className="form-textarea"
                             />
                         </div>
 
-                        <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+                        <div className="modal-actions">
                             <button
                                 type="button"
                                 onClick={onClose}
-                                style={{
-                                    padding: '10px 20px', borderRadius: '6px', border: 'none',
-                                    background: 'rgba(0,0,0,0.05)', cursor: 'pointer'
-                                }}
+                                className="btn-cancel"
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
-                                style={{
-                                    padding: '10px 20px', borderRadius: '6px', border: 'none',
-                                    background: 'var(--color-text)', color: 'var(--color-bg)',
-                                    fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px'
-                                }}
+                                className="btn-save"
                             >
                                 <Save size={18} /> Save Changes
                             </button>
@@ -201,3 +177,4 @@ const EditPhotoModal = ({ isOpen, onClose, photo, onSave }) => {
 };
 
 export default EditPhotoModal;
+

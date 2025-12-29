@@ -399,135 +399,137 @@ const AdminPanel = () => {
                                 ))}
                             </div>
                         </div>
-                    </div>
 
-                <EditPhotoModal
-                    isOpen={isEditModalOpen}
-                    onClose={() => setIsEditModalOpen(false)}
-                    photo={editingPhoto}
-                    onSave={handleSaveEdit}
-                />
-            </>
-            )}
+                        <EditPhotoModal
+                            isOpen={isEditModalOpen}
+                            onClose={() => setIsEditModalOpen(false)}
+                            photo={editingPhoto}
+                            onSave={handleSaveEdit}
+                        />
+                    </>
+                )}
 
-            {activeTab === 'timeline' && (
-                <div className="timeline-management">
-                    <div className="admin-card">
-                        <h3>{editingEventId ? 'Edit Event' : 'Add New Event'}</h3>
-                        <div className="form-grid">
-                            <input
-                                type="date"
-                                value={timelineForm.date}
-                                onChange={e => setTimelineForm({ ...timelineForm, date: e.target.value })}
-                            />
-                            <input
-                                type="text"
-                                placeholder="Title"
-                                value={timelineForm.title}
-                                onChange={e => setTimelineForm({ ...timelineForm, title: e.target.value })}
-                            />
-                            <textarea
-                                placeholder="Description"
-                                value={timelineForm.desc}
-                                onChange={e => setTimelineForm({ ...timelineForm, desc: e.target.value })}
-                            />
-                            <input
-                                type="text"
-                                placeholder="Image URL (Optional)"
-                                value={timelineForm.img}
-                                onChange={e => setTimelineForm({ ...timelineForm, img: e.target.value })}
-                            />
-                            <button
-                                className="save-btn"
-                                onClick={() => {
-                                    if (editingEventId) {
-                                        updateTimelineEvent(editingEventId, timelineForm);
-                                        setEditingEventId(null);
-                                        addToast('Event updated', 'success');
-                                    } else {
-                                        addTimelineEvent(timelineForm);
-                                        addToast('Event added', 'success');
-                                    }
-                                    setTimelineForm({ date: '', title: '', desc: '', img: '' });
-                                }}
-                            >
-                                <Save size={16} /> {editingEventId ? 'Update Event' : 'Add Event'}
-                            </button>
-                            {editingEventId && (
-                                <button className="cancel-btn" onClick={() => {
-                                    setEditingEventId(null);
-                                    setTimelineForm({ date: '', title: '', desc: '', img: '' });
-                                }}>
-                                    Cancel
-                                </button>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className="timeline-list">
-                        {timelineEvents.map(event => (
-                            <div key={event.id} className="timeline-admin-item">
-                                <span className="date">{event.date}</span>
-                                <div className="content">
-                                    <strong>{event.title}</strong>
-                                    <p>{event.desc}</p>
-                                </div>
-                                <div className="actions">
-                                    <button onClick={() => {
-                                        setEditingEventId(event.id);
-                                        setTimelineForm(event);
-                                    }}><Edit2 size={16} /></button>
-                                    <button onClick={() => {
-                                        if (window.confirm('Delete event?')) {
-                                            deleteTimelineEvent(event.id);
-                                            addToast('Event deleted', 'info');
+                {activeTab === 'timeline' && (
+                    <div className="timeline-management">
+                        <div className="admin-card">
+                            <h3>{editingEventId ? 'Edit Event' : 'Add New Event'}</h3>
+                            <div className="form-grid">
+                                <input
+                                    type="date"
+                                    value={timelineForm.date}
+                                    onChange={e => setTimelineForm({ ...timelineForm, date: e.target.value })}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Title"
+                                    value={timelineForm.title}
+                                    onChange={e => setTimelineForm({ ...timelineForm, title: e.target.value })}
+                                />
+                                <textarea
+                                    placeholder="Description"
+                                    value={timelineForm.desc}
+                                    onChange={e => setTimelineForm({ ...timelineForm, desc: e.target.value })}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Image URL (Optional)"
+                                    value={timelineForm.img}
+                                    onChange={e => setTimelineForm({ ...timelineForm, img: e.target.value })}
+                                />
+                                <button
+                                    className="save-btn"
+                                    onClick={() => {
+                                        if (editingEventId) {
+                                            updateTimelineEvent(editingEventId, timelineForm);
+                                            setEditingEventId(null);
+                                            addToast('Event updated', 'success');
+                                        } else {
+                                            addTimelineEvent(timelineForm);
+                                            addToast('Event added', 'success');
                                         }
-                                    }}><Trash2 size={16} /></button>
-                                </div>
+                                        setTimelineForm({ date: '', title: '', desc: '', img: '' });
+                                    }}
+                                >
+                                    <Save size={16} /> {editingEventId ? 'Update Event' : 'Add Event'}
+                                </button>
+                                {editingEventId && (
+                                    <button className="cancel-btn" onClick={() => {
+                                        setEditingEventId(null);
+                                        setTimelineForm({ date: '', title: '', desc: '', img: '' });
+                                    }}>
+                                        Cancel
+                                    </button>
+                                )}
                             </div>
-                        ))}
-                    </div>
-                </div>
-            )}
+                        </div>
 
-            {activeTab === 'home' && (
-                <div className="home-management">
-                    <div className="admin-card">
-                        <h3>Hero Section Settings</h3>
-                        <div className="form-group">
-                            <label>Main Title</label>
-                            <input
-                                type="text"
-                                value={heroForm.title}
-                                onChange={e => setHeroForm({ ...heroForm, title: e.target.value })}
-                            />
+                        <div className="timeline-list">
+                            {timelineEvents.map(event => (
+                                <div key={event.id} className="timeline-admin-item">
+                                    <span className="date">{event.date}</span>
+                                    <div className="content">
+                                        <strong>{event.title}</strong>
+                                        <p>{event.desc}</p>
+                                    </div>
+                                    <div className="actions">
+                                        <button onClick={() => {
+                                            setEditingEventId(event.id);
+                                            setTimelineForm(event);
+                                        }}><Edit2 size={16} /></button>
+                                        <button onClick={() => {
+                                            if (window.confirm('Delete event?')) {
+                                                deleteTimelineEvent(event.id);
+                                                addToast('Event deleted', 'info');
+                                            }
+                                        }}><Trash2 size={16} /></button>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                        <div className="form-group">
-                            <label>Subtitle (Supports multiline)</label>
-                            <textarea
-                                rows="3"
-                                value={heroForm.subtitle}
-                                onChange={e => setHeroForm({ ...heroForm, subtitle: e.target.value })}
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label>Background Image URL</label>
-                            <input
-                                type="text"
-                                value={heroForm.image}
-                                onChange={e => setHeroForm({ ...heroForm, image: e.target.value })}
-                            />
-                            {heroForm.image && <img src={heroForm.image} alt="Preview" className="preview-sm" />}
-                        </div>
-                        <button className="save-btn" onClick={() => {
-                            updateHero(heroForm);
-                            addToast('Home settings saved', 'success');
-                        }}>
-                            <Save size={16} /> Save Changes
-                        </button>
                     </div>
-                </div>
-            )}
+                )}
+
+                {activeTab === 'home' && (
+                    <div className="home-management">
+                        <div className="admin-card">
+                            <h3>Hero Section Settings</h3>
+                            <div className="form-group">
+                                <label>Main Title</label>
+                                <input
+                                    type="text"
+                                    value={heroForm.title}
+                                    onChange={e => setHeroForm({ ...heroForm, title: e.target.value })}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Subtitle (Supports multiline)</label>
+                                <textarea
+                                    rows="3"
+                                    value={heroForm.subtitle}
+                                    onChange={e => setHeroForm({ ...heroForm, subtitle: e.target.value })}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>Background Image URL</label>
+                                <input
+                                    type="text"
+                                    value={heroForm.image}
+                                    onChange={e => setHeroForm({ ...heroForm, image: e.target.value })}
+                                />
+                                {heroForm.image && <img src={heroForm.image} alt="Preview" className="preview-sm" />}
+                            </div>
+                            <button className="save-btn" onClick={() => {
+                                updateHero(heroForm);
+                                addToast('Home settings saved', 'success');
+                            }}>
+                                <Save size={16} /> Save Changes
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
+    );
+};
 
-            export default AdminPanel;
+export default AdminPanel;
